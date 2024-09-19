@@ -54,10 +54,10 @@ pip install -r requirements.txt
 
 ### 1. Iniciando a API
 
-Navegue até o diretório `app_api` e execute o servidor Flask:
+Navegue até o diretório `backend-estudio-musica` e execute o servidor Flask:
 
 ```bash
-cd app_api
+cd backend-estudio-musica
 flask run --host 0.0.0.0 --port 5000
 ```
 

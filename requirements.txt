@@ -1,0 +1,7 @@
+Flask==2.3.2                # Flask para a criação da API
+Flask-Cors==3.0.10          # Suporte a CORS para a API
+flask-openapi3==3.1.3       # Documentação OpenAPI com Flask
+SQLAlchemy==2.0.19          # ORM principal para o banco de dados
+SQLAlchemy-Utils==0.41.2    # Extensões para SQLAlchemy (verificação de bancos de dados, etc.)
+pydantic==2.9.1             # Validação de dados com Pydantic
+typing-extensions==4.12.2   # Tipagem adicional para o Python (necessário por causa do 'typing')

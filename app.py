@@ -22,7 +22,6 @@ cliente_tag = Tag(name="Cliente", description="Gerencia cadastro de clientes")
 def home():
     return redirect('/openapi')
 
-
 # ==========================
 # Endpoints relacionados ao Cliente
 # ==========================
@@ -117,30 +116,35 @@ def del_cliente(query: ClienteBuscaSchema):
          responses={'200': ClienteViewSchema}, methods=['PUT'])
 def update_cliente():
     '''
-    Atualiza as informações de um cliente existente
+    Atualiza as informações de um cliente existente dentro do contexto de sessão ativo.
     '''
     data = request.form
     id = data.get('id')
+    
     if not id:
         return jsonify({"message": "ID não fornecido"}), 400
-    # Busca o cliente pelo ID
-    with Session() as session:
-        cliente = session.query(Cliente).filter(Cliente.id == id).first()
 
-    # Caso não encontre cliente
-    if not cliente:
-        return jsonify({"message": "Cliente não encontrado"}), 404
+    try:
+        # Inicia uma sessão para operações de banco de dados
+        with Session() as session:
+            # Busca o cliente pelo ID dentro do contexto da sessão
+            cliente = session.query(Cliente).filter(Cliente.id == id).one_or_none()
 
+            if cliente is None:
+                return jsonify({"message": "Cliente não encontrado"}), 404
 
-    cliente.nome = data.get('nome')
-    # Converte a data de nascimento recebida em string para um objeto date
-    data_nasc_str = data.get('data_nasc')
-    cliente.data_nasc = datetime.strptime(data_nasc_str, '%Y-%m-%d').date()  # Converte a string para date
-    cliente.email = data.get('email')
-    cliente.celular = data.get('celular')
-    cliente.instrumentos = data.get('instrumentos')
+            # Atualiza os campos do cliente
+            cliente.nome = data.get('nome')
+            cliente.data_nasc = datetime.strptime(data.get('data_nasc'), '%Y-%m-%d').date()
+            cliente.email = data.get('email')
+            cliente.celular = data.get('celular')
+            cliente.instrumentos = data.get('instrumentos')
 
-    session.commit()
+            # Commit das alterações dentro do contexto da sessão
+            session.commit()
 
-    return jsonify({"id": cliente.id, "message": "Cliente atualizado com sucesso"}), 200
+        return jsonify({"id": cliente.id, "message": "Cliente atualizado com sucesso"}), 200
 
+    except Exception as e:
+        print(f"Erro ao atualizar o cliente: {e}")  # Loga o erro no console para depuração
+        return jsonify({"error": str(e)}), 500
